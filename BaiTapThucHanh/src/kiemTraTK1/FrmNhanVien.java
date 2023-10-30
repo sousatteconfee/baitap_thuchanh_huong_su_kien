@@ -1,0 +1,199 @@
+package kiemTraTK1;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+
+import javax.swing.JButton;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+
+import javax.swing.table.DefaultTableModel;
+
+
+
+public class FrmNhanVien extends JFrame implements ActionListener   {
+
+	private static final long serialVersionUID = 1L;
+	private JTextField txtMa;
+	private JTextField txtTen;
+	private JTextField txtDiaChi;
+	private JTextField txtTuoi;
+	private JTextField txtEmail;
+	
+	private JButton btnThem;
+	private JTable table;
+	private JButton btnXoaRong;
+
+
+	private DefaultTableModel tableModel;
+	private JLabel lblEmail;
+	private Nhanvien_Collection listnhanvien;
+
+	public FrmNhanVien() {
+		setTitle("Kiểm tra TK1 <Nguyễn Phú Sang> <21023391>");
+		setSize(900, 600);
+		setLocationRelativeTo(null);
+		setResizable(false);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		buildUI();
+	}
+
+	private void buildUI() {
+
+		// Phần North
+		JPanel pnlNorth;
+		add(pnlNorth = new JPanel(), BorderLayout.NORTH);
+		pnlNorth.setPreferredSize(new Dimension(0, 180));
+		pnlNorth.setBorder(BorderFactory.createTitledBorder("Thông tin"));
+		pnlNorth.setLayout(null); // Absolute layout
+
+		JLabel lblMaNV, lblHoTen, lblDiaChi, lblTuoi, lblNhaXB;
+		pnlNorth.add(lblMaNV = new JLabel("Mã Nhân Viên: "));
+		pnlNorth.add(lblHoTen = new JLabel("Họ Tên: "));
+		pnlNorth.add(lblDiaChi = new JLabel("Địa chỉ: "));
+		pnlNorth.add(lblTuoi = new JLabel("Tuổi: "));
+		pnlNorth.add(lblEmail = new JLabel("Email: "));
+		
+		pnlNorth.add(txtMa = new JTextField());
+		pnlNorth.add(txtTen = new JTextField());
+		pnlNorth.add(txtDiaChi = new JTextField());
+		pnlNorth.add(txtTuoi = new JTextField());
+		pnlNorth.add(txtEmail = new JTextField());
+		
+
+		int w1 = 100, w2 = 300, h = 20;
+		lblMaNV.setBounds(20, 20, w1, h);
+		txtMa.setBounds(120, 20, 200, h);
+
+		lblHoTen.setBounds(20, 45, w1, h);
+		txtTen.setBounds(120, 45, w2, h);
+		lblDiaChi.setBounds(450, 45, w1, h);
+		txtDiaChi.setBounds(570, 45, w2, h);
+
+		lblTuoi.setBounds(20, 70, w1, h);
+		txtTuoi.setBounds(120, 70, w2, h);
+		lblEmail.setBounds(450, 70, w1, h);
+		txtEmail.setBounds(570, 70, w2, h);
+
+		// Phần Center
+		JPanel pnlCenter;
+		add(pnlCenter = new JPanel(), BorderLayout.CENTER);
+		pnlCenter.add(btnThem = new JButton("Thêm - kiểm tra dữ liệu ..."));
+		pnlCenter.add(btnXoaRong = new JButton("Xóa rỗng"));
+
+		// Phần South
+		JScrollPane scroll;
+		String[] headers = "MaNhanVien;HoTenNV;Tuoi;DiaChi; Email".split(";");
+
+		tableModel = new DefaultTableModel(headers, 0);
+		add(scroll = new JScrollPane(table = new JTable(tableModel), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), BorderLayout.SOUTH);
+		scroll.setBorder(BorderFactory.createTitledBorder("Danh sách"));
+		table.setRowHeight(20);
+		scroll.setPreferredSize(new Dimension(0, 350));
+	
+		
+		listnhanvien=new Nhanvien_Collection();
+		
+		//sukien
+		btnThem.addActionListener(this);
+		btnXoaRong.addActionListener(this);
+	}
+	
+
+	
+	
+	private boolean validdata() {
+		String manhanvien=txtMa.getText().trim();
+		String hotennhanvien=txtTen.getText().trim();
+		String diachi=txtDiaChi.getText().trim();
+		String tuoi=txtTuoi.getText().trim();
+		String email=txtEmail.getText().trim();
+		if(!(manhanvien.length()>0&&manhanvien.matches("^NV\\d{3}*"))) {
+			JOptionPane.showMessageDialog(this, "Phải bắt đầu bằng 2 chữ cái “NV, theo sau là 3 chữ số");
+			return false;
+		}
+		if(tuoi.length()>0) {
+			try {
+				int x=Integer.parseInt(tuoi);
+				if(!(x>=18||x<=60)) {
+					JOptionPane.showMessageDialog(this, "Tuổi phải từ 18-60 tuổi");
+					return false;
+				}
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(this, "Tuổi phải từ 18-60 tuổi");
+				return false;
+			}
+		}
+		if(!(email.length()>0||email.matches("^[A-Za-z0-9]+[a-zA-Z0-9,.-_]+@(yahoo|google|gmail).com"))) {
+			JOptionPane.showMessageDialog(this, "Email sai cú pháp");
+			return false;
+		}
+		if(!(hotennhanvien.length()>0||hotennhanvien.matches("[a-zA-Z0-9]\s?{1,}"))) {
+			JOptionPane.showMessageDialog(this, "Tên sai cú pháp");
+			return false;
+		}
+		if(!(diachi.length()>0||diachi.matches("[a-zA-Z0-9]\s?{1,}"))) {
+			JOptionPane.showMessageDialog(this, "Địa chỉ sai cú pháp");
+			return false;
+		}
+		
+		return true;
+		
+	}
+	private NhanVien revertfromtextfield() {
+		String manhanvien=txtMa.getText().trim();
+		String hoten=txtTen.getText().trim();
+		String diachi=txtDiaChi.getText().trim();
+		String tuoi=txtTuoi.getText().trim();
+		int sotuoi=tuoi.length()==0?0:Integer.parseInt(tuoi);
+		String email=txtEmail.getText().trim();
+		
+		return new NhanVien(manhanvien,hoten,diachi,sotuoi,email);
+		
+	}
+
+	private void clearTextfields() {
+		txtMa.setText("");
+		txtTen.setText("");
+		txtDiaChi.setText("");
+		txtTuoi.setText("");
+		txtEmail.setText("");
+		txtMa.setEditable(true);
+		txtMa.requestFocus();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object o=e.getSource();
+		if(o.equals(btnThem)) {
+			if(validdata()) {
+				NhanVien n=revertfromtextfield();
+				if(!listnhanvien.Themnhanvien(n)) {
+					JOptionPane.showMessageDialog(this, "Trùng");
+				}else {
+					tableModel.addRow(new Object[]{n.getMaNV(),n.getHoTen(),n.getDiaChi(),n.getTuoi(),n.getEmail()});
+				}
+			}
+			
+		}else if(o.equals(btnXoaRong)) {
+			clearTextfields();
+		}
+			
+		
+	}
+	
+	
+}
